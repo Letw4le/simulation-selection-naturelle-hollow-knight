@@ -1,7 +1,7 @@
 import pygame
-from math import *
-from random import *
-comportement_possible=["deviant", "gourmand", "peureux"]
+from math import pi, cos, sin, atan2
+from random import randint, uniform
+comportement_possible=["gourmand", "gourmand", "gourmand"]
 #"déviant" -> il bouge dans tout les sens sans réfléchir
 #"gourmand" -> il veut juste manger sans se soucier des monstres, apres avoir mangé 10 fois il gagne une vie même s'il est à 3
 # "peureux" -> il fuit le plus possible les monstres
@@ -32,6 +32,7 @@ class Hollow_knights:
         self.manger = 0 # combien de fois il a mangé
         self.immunite = 0
         self.rassasier = 0
+        self.virus_ignorees = {}  
         self.taille_hauteur=self.image.get_size()[0]
         self.taille_largeur=self.image.get_size()[1]
         size_evolution=(randint(0,2),randint(0,1))

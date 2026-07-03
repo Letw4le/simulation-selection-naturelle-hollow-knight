@@ -1,5 +1,5 @@
-from random import *
-from math import *
+from random import randint, uniform
+from math import pi, cos, sin
 import pygame
 
 class virus_jaune:

@@ -1,7 +1,7 @@
 #classe virus bleu
-from random import *
-import pygame 
-from math import *
+from random import randint, uniform
+import pygame
+from math import pi, cos, sin, atan2
 comportement_possible=["normal", "peureux"]
 
 class Bleu:

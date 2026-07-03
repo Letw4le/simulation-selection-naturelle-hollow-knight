@@ -1,13 +1,13 @@
-from class_hollow_knights import *
-from class_virus_jaune import *
-from class_virus_bleu import *
-from random import randint
-from time import sleep
+from class_hollow_knights import Hollow_knights
+from class_virus_jaune import virus_jaune
+from class_virus_bleu import Bleu
+from random import randint, uniform
+from math import pi
 import pygame
 import threading
-from game_time import *
-from class_btn_img import * 
-from menu import *
+from game_time import Horloge
+from class_btn_img import Button_img
+from menu import Button
 
 
 #settings de base
@@ -123,8 +123,9 @@ def nouvelle_generation_hollow_knight(liste_hollow_knight):
 
         # reset des données
         individu.duree_vie=0
-        individu.faim = randint(5,10)  
+        individu.faim = randint(5,10)
         individu.manger = 0
+        individu.virus_ignorees = {}
         individu.pos_x=randint(100,1100)
         individu.pos_y=randint(100,700)
         individu.angle=uniform(0,2 * pi)
@@ -312,7 +313,8 @@ while state["running"]:
                 if individu.rassasier == 0:
                     individu.faim += 2
                     individu.manger += 1
-                    individu.rassasier = 10
+                    individu.rassasier = 30
+                    individu.virus_ignorees[id(virus)] = Horloge.get_actual_time() + 30
 
                     
         if individu.comportement == "deviant":
@@ -332,17 +334,22 @@ while state["running"]:
                 individu.deplacement_aleatoire()
 
         elif individu.comportement == "gourmand":
-            food = None
-            distance_min = float('inf')
-            for f in liste_virus_bleu_alive:
-                d2 = (individu.pos_x - f.pos_x)**2 + (individu.pos_y - f.pos_y)**2
-                if d2 < distance_min:
-                    distance_min = d2
-                    food = f
-            if food is not None:
-                individu.deplacement_gourmand(food.pos_x, food.pos_y)
-            else:
-                individu.deplacement_aleatoire()
+                food = None
+                distance_min = float('inf')
+                temps_actuel = Horloge.get_actual_time()
+                for f in liste_virus_bleu_alive:
+                    if individu.virus_ignorees.get(id(f), 0) > temps_actuel:
+                        continue
+                    d2 = (individu.pos_x - f.pos_x)**2 + (individu.pos_y - f.pos_y)**2
+                    if d2 < distance_min:
+                        distance_min = d2
+                        food = f
+                if food is not None:
+                    individu.deplacement_gourmand(food.pos_x, food.pos_y)
+                else:
+                    individu.deplacement_aleatoire()
+        else:
+            individu.deplacement_aleatoire()
         
               
 
@@ -471,6 +478,7 @@ while state["running"]:
 
         liste_virus_jaune=[virus_jaune(i) for i in range (15)]
         state["nb_gen"] +=1
+        global_speed(state["speed"])
         Horloge.reset_time()
 
         for individu in liste_hollow_knight_alive:
